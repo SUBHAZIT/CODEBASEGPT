@@ -1,0 +1,244 @@
+import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  MessageSquare, FileCode, ChevronLeft, Code2,
+  Layers, Package, AlertTriangle, BookOpen, Network, Shield, LayoutDashboard, CircleDot,
+  Sparkles, FolderOpen, Settings, ArrowUpRight, LogIn, Info, Database, GitBranch,
+  User,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DEMO_REPOS, DEMO_OVERVIEW, DEMO_FILE_TREE } from "@/lib/mock-data";
+import { useRepoStore } from "@/lib/store";
+import DependencyGraph from "@/components/dashboard/DependencyGraph";
+import CodebaseSearch from "@/components/dashboard/CodebaseSearch";
+import { useCompactMode } from "@/hooks/use-compact-mode";
+import { useState } from "react";
+
+const QUESTION_ICONS = [LogIn, Info, Database, GitBranch];
+
+const RepoDashboard = () => {
+  const { repoId } = useParams();
+  const navigate = useNavigate();
+  const compact = useCompactMode();
+  const { meta: storeMeta, overview: storeOverview, fileTree: storeFileTree } = useRepoStore();
+  const [graphExpanded, setGraphExpanded] = useState(false);
+
+  const repo = storeMeta || DEMO_REPOS.find((r) => r.id === repoId) || DEMO_REPOS[0];
+  const overview = storeOverview || DEMO_OVERVIEW;
+  const fileTree = storeFileTree.length > 0 ? storeFileTree : DEMO_FILE_TREE;
+
+  const navItems = [
+    { label: "Issues", icon: CircleDot, path: `/repo/${repoId}/issues` },
+    { label: "Onboarding", icon: BookOpen, path: `/repo/${repoId}/onboarding` },
+    { label: "Security", icon: Shield, path: `/repo/${repoId}/security` },
+    { label: "System Design", icon: LayoutDashboard, path: `/repo/${repoId}/system-design` },
+  ];
+
+  const fileDescriptions: Record<string, string> = {
+    0: "Core logic",
+    1: "Configuration",
+    2: "Build setup",
+    3: "Entry point",
+    4: "Routing",
+  };
+
+  const fileIcons = [FolderOpen, Settings, Settings, Code2, GitBranch];
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* ── Navbar ── */}
+      <nav className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto flex items-center justify-between h-12 px-6">
+          <div className="flex items-center gap-6">
+            <button onClick={() => navigate("/")} className="flex items-center gap-2 text-primary font-semibold text-sm">
+              <Code2 className="h-4 w-4" />
+              <span>CodebaseGPT</span>
+            </button>
+            {!compact && (
+              <div className="flex items-center gap-1">
+                {navItems.map((item) => (
+                  <Button key={item.label} variant="ghost" size="sm" onClick={() => navigate(item.path)}
+                    className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground">
+                    {item.label}
+                  </Button>
+                ))}
+                <Button onClick={() => navigate(`/repo/${repoId}/chat`)} variant="ghost" size="sm"
+                  className="h-8 px-3 text-xs text-primary hover:text-primary">
+                  Chat
+                </Button>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            {!compact && <CodebaseSearch repoId={repoId || repo.id} />}
+            <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center">
+              <User className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Content ── */}
+      <div className="max-w-6xl mx-auto px-6 py-8 flex-1 w-full">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+          {/* Repo breadcrumb */}
+          <div className="flex items-center gap-2 mb-5">
+            <span className="text-sm text-muted-foreground">{repo.owner}</span>
+            <span className="text-sm text-muted-foreground">/</span>
+            <span className="text-sm text-foreground font-semibold">{repo.name}</span>
+            <button className="text-muted-foreground hover:text-foreground transition-colors ml-1">
+              <Settings className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Stats pills */}
+          <div className="flex items-center gap-2 mb-8 flex-wrap">
+            {[
+              { label: overview.framework.toUpperCase(), icon: Layers, variant: "primary" },
+              { label: `${repo.fileCount.toLocaleString()} FILES`, icon: FileCode, variant: "default" },
+              { label: `${overview.complexity.toUpperCase()} COMPLEXITY`, icon: AlertTriangle, variant: overview.complexity === "High" || overview.complexity === "Enterprise" ? "warning" : "default" },
+              { label: repo.language.toUpperCase(), icon: Code2, variant: "default" },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-medium tracking-wide ${
+                  stat.variant === "primary"
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : stat.variant === "warning"
+                    ? "border-warning/30 bg-warning/10 text-warning"
+                    : "border-border bg-card text-foreground"
+                }`}
+              >
+                <stat.icon className="h-3.5 w-3.5" />
+                {stat.label}
+              </div>
+            ))}
+          </div>
+
+          {/* Architecture + Key Files row */}
+          <div className="grid lg:grid-cols-[1fr_320px] gap-4 mb-4">
+            {/* Architecture Narrative card */}
+            <div className="rounded-lg border border-border bg-card p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">Architecture Narrative</h2>
+              </div>
+              <p className="text-sm leading-relaxed text-secondary-foreground">{overview.narrative}</p>
+            </div>
+
+            {/* Key Files card */}
+            <div className="rounded-lg border border-border bg-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <FileCode className="h-4 w-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">Key Files</h2>
+              </div>
+              <div className="space-y-0.5">
+                {overview.keyFiles.slice(0, 5).map((file, i) => {
+                  const Icon = fileIcons[i] || FileCode;
+                  return (
+                    <button
+                      key={i}
+                      className="flex items-center justify-between w-full px-2 py-2 rounded hover:bg-accent/30 transition-colors group"
+                      onClick={() => navigate(`/repo/${repoId}/chat`, { state: { initialQuestion: `Explain the file: ${file}` } })}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="text-xs font-mono text-foreground">{file.split("/").pop()}</span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">{fileDescriptions[i] || "Source"}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Dependency Graph + Dependencies row */}
+          <div className="grid lg:grid-cols-[1fr_320px] gap-4 mb-8">
+            {/* Dependency Graph card */}
+            {!compact && (
+              <div className="rounded-lg border border-border bg-card p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Network className="h-4 w-4 text-primary" />
+                    <h2 className="text-sm font-semibold text-foreground">Dependency Graph</h2>
+                  </div>
+                  <button
+                    onClick={() => setGraphExpanded(!graphExpanded)}
+                    className="text-xs text-primary hover:text-primary/80 transition-colors"
+                  >
+                    {graphExpanded ? "Collapse" : "Expand"}
+                  </button>
+                </div>
+                <div style={{ height: graphExpanded ? 560 : 340 }} className="transition-all duration-500 ease-in-out">
+                  <DependencyGraph
+                    fileTree={fileTree}
+                    expanded={graphExpanded}
+                    onShowDetails={(path) => {
+                      navigate(`/repo/${repoId}/chat`, { state: { initialQuestion: `Show me the details of: ${path} — what does it do, what are its exports, and how is it used?` } });
+                    }}
+                    onExplain={(path) => {
+                      navigate(`/repo/${repoId}/chat`, { state: { initialQuestion: `Explain the file: ${path}` } });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Dependencies card */}
+            <div className="rounded-lg border border-border bg-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Package className="h-4 w-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">Dependencies</h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {overview.mainDeps.map((dep) => (
+                  <span
+                    key={dep}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs bg-muted text-secondary-foreground border border-border"
+                  >
+                    {dep}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Suggested Questions */}
+          <section className="mb-12">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare className="h-4 w-4 text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">Suggested Questions</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {overview.suggestedQs.slice(0, 4).map((q, i) => {
+                const Icon = QUESTION_ICONS[i % QUESTION_ICONS.length];
+                return (
+                  <button
+                    key={i}
+                    onClick={() => navigate(`/repo/${repoId}/chat`, { state: { initialQuestion: q } })}
+                    className="group text-left p-4 rounded-lg border border-border bg-card hover:border-primary/30 hover:bg-primary/5 transition-all duration-200"
+                  >
+                    <Icon className="h-4 w-4 text-muted-foreground mb-3" />
+                    <p className="text-xs text-secondary-foreground group-hover:text-foreground transition-colors leading-relaxed">
+                      {q}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </motion.div>
+      </div>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-border py-6">
+        <p className="text-center text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+          Powered by CodebaseGPT • Indexing Complete
+        </p>
+      </footer>
+    </div>
+  );
+};
+
+export default RepoDashboard;
