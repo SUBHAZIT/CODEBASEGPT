@@ -8,10 +8,23 @@ export interface ChangelogEntry {
 
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: "v2.5.0-stable",
+    date: "March 21, 2026",
+    type: "Major Update",
+    isLatest: true,
+    changes: [
+      "Global HUD Theme Expansion: Standardized 'cool and classic' aesthetics with blueprint grids and teal glows across all sub-pages.",
+      "Seamless Private Repo Indexing: Automated GitHub provider token detection from login session, eliminating manual PAT requirements.",
+      "Real-time Analytics: Integrated unique visitor tracking with Supabase and dynamic 'CountUp' statistics on the landing page.",
+      "Robust Resource Diagnostics: Enhanced Edge Function error handling with descriptive feedback for private repository access issues.",
+      "Typography & Brand Polish: Unified premium serif typography and wide-tracked all-caps metadata for a cohesive system experience."
+    ]
+  },
+  {
     version: "v2.3.0-stable",
     date: "March 20, 2026",
     type: "Major Update",
-    isLatest: true,
+    isLatest: false,
     changes: [
       "Released 'Architectural Suite': 8 new high-fidelity sub-pages with professional technical content.",
       "Optimized rendering engine: 60FPS scrolling achieved by refining backdrop-blur and pruning heavy animations.",
