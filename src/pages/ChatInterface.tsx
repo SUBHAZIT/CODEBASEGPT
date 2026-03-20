@@ -245,9 +245,8 @@ const ChatInterface = () => {
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">Previous Sessions</p>
                   {chatHistory.map((entry) => (
                     <button key={entry.sessionId} onClick={() => loadSession(entry)}
-                      className={`w-full text-left flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-accent/30 transition-colors group ${
-                        entry.sessionId === sessionId ? "bg-accent/20" : ""
-                      }`}>
+                      className={`w-full text-left flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-accent/30 transition-colors group ${entry.sessionId === sessionId ? "bg-accent/20" : ""
+                        }`}>
                       <div className="flex-1 min-w-0">
                         <p className="text-[11px] text-foreground truncate">{entry.lastMessage || "Empty chat"}</p>
                         <p className="text-[10px] text-muted-foreground">

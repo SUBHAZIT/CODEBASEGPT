@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import {
   ArrowRight, Zap, MessageSquare, FileCode, Code2, Lock, ChevronDown,
-  Shield, GitBranch, Search, Brain, BarChart3, Bug, Sun, Moon,
+  Shield, GitBranch, Search, Brain, BarChart3, Bug, Sun, Moon, Github, LogOut, User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useUserAuth } from "@/hooks/use-user-auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { UserRepos } from "@/components/dashboard/UserRepos";
+import { useUsageStore } from "@/lib/usage-store";
+import { LoginWall } from "@/components/auth/LoginWall";
+import { Progress } from "@/components/ui/progress";
 
 const FEATURES = [
   {
@@ -80,10 +87,13 @@ const Landing = () => {
   const [showToken, setShowToken] = useState(false);
   const navigate = useNavigate();
   const compact = useCompactMode();
+  const { user, loginWithGitHub, logout, loading } = useUserAuth();
   const { theme, toggleTheme } = useTheme();
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
   const navBg = useTransform(smoothProgress, [0, 0.05], [0, 1]);
+  const { indexCount, incrementIndexCount } = useUsageStore();
+  const [showLoginWall, setShowLoginWall] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("github_pat");
@@ -98,52 +108,63 @@ const Landing = () => {
       toast({ title: "Invalid URL", description: "Please enter a valid GitHub repository URL.", variant: "destructive" });
       return;
     }
+
+    if (!user && indexCount >= 5) {
+      console.log("Limit hit, showing LoginWall", { indexCount });
+      setShowLoginWall(true);
+      return;
+    }
+
     if (githubToken) localStorage.setItem("github_pat", githubToken);
+    if (!user) incrementIndexCount();
+
     navigate(`/index/custom-repo`, { state: { githubUrl: repoUrl, githubToken: githubToken || undefined } });
   };
 
-  if (compact) {
-    return (
-      <div className="h-screen flex flex-col bg-background p-3">
-        <div className="flex items-center gap-2 mb-3">
-          <Code2 className="h-4 w-4 text-primary" />
-          <span className="font-mono text-xs font-medium text-foreground">CodebaseGPT</span>
-        </div>
-        <div className="mb-3">
-          <div className="flex gap-1.5">
-            <Input
-              placeholder="github.com/owner/repo"
-              value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleIndex()}
-              className="h-8 font-mono text-xs bg-card border-border"
-            />
-            <Button onClick={handleIndex} size="sm" className="h-8 px-3 text-xs shrink-0">
-              Go
-            </Button>
-          </div>
-          <Collapsible open={showToken} onOpenChange={setShowToken}>
-            <CollapsibleTrigger className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors mt-1.5">
-              <Lock className="h-2.5 w-2.5" /> Private repo?
-              <ChevronDown className={`h-2.5 w-2.5 transition-transform ${showToken ? "rotate-180" : ""}`} />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <Input
-                type="password"
-                placeholder="GitHub Personal Access Token"
-                value={githubToken}
-                onChange={(e) => setGithubToken(e.target.value)}
-                className="h-7 font-mono text-[10px] bg-card border-border mt-1.5"
-              />
-            </CollapsibleContent>
-          </Collapsible>
-        </div>
-        <p className="text-[10px] text-muted-foreground">Paste any GitHub URL to get started.</p>
-      </div>
-    );
-  }
+  const handleRepoClick = (url: string) => {
+    setRepoUrl(url);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  return (
+  const content = compact ? (
+    <div className="h-screen flex flex-col bg-background p-3">
+      <div className="flex items-center gap-2 mb-3">
+        <Code2 className="h-4 w-4 text-primary" />
+        <span className="font-mono text-xs font-medium text-foreground">CodebaseGPT</span>
+      </div>
+      <div className="mb-3">
+        <div className="flex gap-1.5">
+          <Input
+            placeholder="github.com/owner/repo"
+            value={repoUrl}
+            onChange={(e) => setRepoUrl(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleIndex()}
+            className="h-8 font-mono text-xs bg-card border-border"
+          />
+          <Button onClick={handleIndex} size="sm" className="h-8 px-3 text-xs shrink-0">
+            Go
+          </Button>
+        </div>
+
+        <Collapsible open={showToken} onOpenChange={setShowToken}>
+          <CollapsibleTrigger className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors mt-1.5">
+            <Lock className="h-2.5 w-2.5" /> Private repo?
+            <ChevronDown className={`h-2.5 w-2.5 transition-transform ${showToken ? "rotate-180" : ""}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <Input
+              type="password"
+              placeholder="GitHub Personal Access Token"
+              value={githubToken}
+              onChange={(e) => setGithubToken(e.target.value)}
+              className="h-7 font-mono text-[10px] bg-card border-border mt-1.5"
+            />
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+      <p className="text-[10px] text-muted-foreground">Paste any GitHub URL to get started.</p>
+    </div>
+  ) : (
     <div className="min-h-screen bg-background">
       {/* Nav */}
       <motion.nav
@@ -166,6 +187,43 @@ const Landing = () => {
             >
               {theme === "dark" ? <Sun className="h-3.5 w-3.5 text-muted-foreground" /> : <Moon className="h-3.5 w-3.5 text-muted-foreground" />}
             </button>
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.user_metadata.avatar_url} alt={user.user_metadata.user_name} />
+                      <AvatarFallback>{user.user_metadata.user_name?.[0]?.toUpperCase() || <User className="h-4 w-4" />}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.user_metadata.user_name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => logout()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => loginWithGitHub()}
+                className="h-8 px-3 text-xs gap-2"
+                disabled={loading}
+              >
+                <Github className="h-3.5 w-3.5" />
+                Login
+              </Button>
+            )}
           </div>
         </div>
       </motion.nav>
@@ -207,6 +265,24 @@ const Landing = () => {
               </Button>
             </div>
 
+            {!user && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="max-w-xl flex flex-col gap-2"
+              >
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                    Free Tier: {5 - indexCount} indexings remaining
+                  </span>
+                  <span className="text-[10px] font-medium text-muted-foreground">
+                    {indexCount}/5 used
+                  </span>
+                </div>
+                <Progress value={(indexCount / 5) * 100} className="h-1 bg-card border border-border/50" />
+              </motion.div>
+            )}
+
             <Collapsible open={showToken} onOpenChange={setShowToken}>
               <CollapsibleTrigger className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors mt-3">
                 <Lock className="h-3 w-3" /> Private repository?
@@ -226,6 +302,10 @@ const Landing = () => {
           </motion.div>
         </div>
       </section>
+
+      {user && (
+        <UserRepos onIndex={handleRepoClick} />
+      )}
 
       {/* Features Grid */}
       <section id="features" className="py-20 border-t border-border">
@@ -392,13 +472,13 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card/50">
+      <footer className="py-12 border-t border-border bg-card/30">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <Code2 className="h-4 w-4 text-primary" />
+                <img src="/logo.png" alt="Logo" className="h-5 w-5 object-contain" />
                 <span className="font-mono text-sm font-medium text-foreground">CodebaseGPT</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
@@ -410,9 +490,9 @@ const Landing = () => {
             <div>
               <p className="text-xs font-medium text-foreground mb-3 uppercase tracking-wider">Product</p>
               <ul className="space-y-2">
-                <li><a href="#features" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#how-it-works" className="text-xs text-muted-foreground hover:text-foreground transition-colors">How it works</a></li>
-                <li><a href="#faq" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FAQ</a></li>
+                <li><Link to="/features" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Features</Link></li>
+                <li><Link to="/how-it-works" className="text-xs text-muted-foreground hover:text-foreground transition-colors">How it works</Link></li>
+                <li><Link to="/faq" className="text-xs text-muted-foreground hover:text-foreground transition-colors">FAQ</Link></li>
               </ul>
             </div>
 
@@ -421,8 +501,8 @@ const Landing = () => {
               <p className="text-xs font-medium text-foreground mb-3 uppercase tracking-wider">Resources</p>
               <ul className="space-y-2">
                 <li><a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground transition-colors">GitHub</a></li>
-                <li><a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Documentation</a></li>
-                <li><a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Changelog</a></li>
+                <li><Link to="/docs" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Documentation</Link></li>
+                <li><Link to="/changelog" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Changelog</Link></li>
               </ul>
             </div>
 
@@ -430,24 +510,36 @@ const Landing = () => {
             <div>
               <p className="text-xs font-medium text-foreground mb-3 uppercase tracking-wider">Legal</p>
               <ul className="space-y-2">
-                <li><a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Contact</a></li>
+                <li><Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link></li>
+                <li><Link to="/contact" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Contact</Link></li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-[11px] text-muted-foreground">
-              © {new Date().getFullYear()} CodebaseGPT. All rights reserved.
+              A PRODUCT OF CODEBASEGPT
             </p>
             <p className="text-[11px] text-muted-foreground">
-              Built with AI · Open for contributions
+              BUILT WITH ❤️ FOR <span className="text-foreground">DEVELOPERS</span>
             </p>
           </div>
         </div>
       </footer>
+      <div className="w-full bg-[#0a0c10] border-t border-white/5 py-4 px-6 flex justify-center">
+        <span className="text-[11px] font-medium text-foreground tracking-wider">
+          © COPYRIGHT 2026 <span className="text-foreground">CODEBASEGPT</span>
+        </span>
+      </div>
     </div>
+  );
+
+  return (
+    <>
+      {content}
+      <LoginWall open={showLoginWall} onOpenChange={setShowLoginWall} />
+    </>
   );
 };
 

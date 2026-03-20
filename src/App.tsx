@@ -12,6 +12,14 @@ import SharedChat from "./pages/SharedChat";
 import SecurityScan from "./pages/SecurityScan";
 import SystemDesign from "./pages/SystemDesign";
 import RepoIssues from "./pages/RepoIssues";
+import Features from "./pages/Features";
+import HowItWorks from "./pages/HowItWorks";
+import FAQ from "./pages/FAQ";
+import Documentation from "./pages/Documentation";
+import Changelog from "./pages/Changelog";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +40,14 @@ const App = () => (
           <Route path="/repo/:repoId/system-design" element={<SystemDesign />} />
           <Route path="/repo/:repoId/issues" element={<RepoIssues />} />
           <Route path="/shared/:sessionId" element={<SharedChat />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/docs" element={<Documentation />} />
+          <Route path="/changelog" element={<Changelog />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

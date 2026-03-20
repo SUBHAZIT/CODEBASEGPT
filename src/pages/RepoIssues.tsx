@@ -118,11 +118,10 @@ Be precise and reference actual files from the codebase.`;
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 text-xs rounded transition-colors ${
-                filter === s
+              className={`px-3 py-1.5 text-xs rounded transition-colors ${filter === s
                   ? "bg-card border border-border text-foreground font-medium"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <CircleDot className={`h-3 w-3 inline mr-1.5 ${s === "open" ? "text-green-500" : "text-muted-foreground"}`} />
               {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -162,9 +161,8 @@ Be precise and reference actual files from the codebase.`;
                   className="p-3 hover:bg-accent/20 transition-colors"
                 >
                   <div className="flex items-start gap-3">
-                    <CircleDot className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${
-                      issue.state === "open" ? "text-green-500" : "text-muted-foreground"
-                    }`} />
+                    <CircleDot className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${issue.state === "open" ? "text-green-500" : "text-muted-foreground"
+                      }`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div>

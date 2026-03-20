@@ -101,13 +101,12 @@ const RepoDashboard = () => {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-medium tracking-wide ${
-                  stat.variant === "primary"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-medium tracking-wide ${stat.variant === "primary"
                     ? "border-primary/30 bg-primary/10 text-primary"
                     : stat.variant === "warning"
-                    ? "border-warning/30 bg-warning/10 text-warning"
-                    : "border-border bg-card text-foreground"
-                }`}
+                      ? "border-warning/30 bg-warning/10 text-warning"
+                      : "border-border bg-card text-foreground"
+                  }`}
               >
                 <stat.icon className="h-3.5 w-3.5" />
                 {stat.label}

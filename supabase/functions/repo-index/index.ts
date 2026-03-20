@@ -45,6 +45,7 @@ serve(async (req) => {
 
   try {
     const { githubUrl, githubToken } = await req.json();
+    console.log(`Indexing repository: ${githubUrl}`);
     
     const parsed = parseGitHubUrl(githubUrl);
     if (!parsed) {
@@ -67,6 +68,7 @@ serve(async (req) => {
     const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
     if (!repoRes.ok) {
       const errText = await repoRes.text();
+      console.error(`GitHub API error (Repo Info): ${repoRes.status}`, errText);
       return new Response(JSON.stringify({ error: `GitHub API error: ${repoRes.status}`, details: errText }), {
         status: repoRes.status === 404 ? 404 : 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
