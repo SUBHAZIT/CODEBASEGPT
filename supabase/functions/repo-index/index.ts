@@ -68,9 +68,13 @@ serve(async (req) => {
     const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
     if (!repoRes.ok) {
       const errText = await repoRes.text();
+      let errorMsg = `GitHub API error: ${repoRes.status}`;
+      if (repoRes.status === 404) errorMsg = "Repository not found or private (access denied)";
+      if (repoRes.status === 401 || repoRes.status === 403) errorMsg = "GitHub API authorization failed or rate limit exceeded";
+      
       console.error(`GitHub API error (Repo Info): ${repoRes.status}`, errText);
-      return new Response(JSON.stringify({ error: `GitHub API error: ${repoRes.status}`, details: errText }), {
-        status: repoRes.status === 404 ? 404 : 502,
+      return new Response(JSON.stringify({ error: errorMsg, details: errText }), {
+        status: 200, // Return 200 so the client can read the error message
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -84,7 +88,7 @@ serve(async (req) => {
     if (!treeRes.ok) {
       const errText = await treeRes.text();
       return new Response(JSON.stringify({ error: "Failed to fetch file tree", details: errText }), {
-        status: 502,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

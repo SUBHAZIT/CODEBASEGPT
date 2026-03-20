@@ -1,68 +1,65 @@
 import React from "react";
 import PageLayout from "@/components/layout/PageLayout";
-import { FileText, Scale, Gavel, AlertCircle } from "lucide-react";
+import { FileText, Scale, Gavel, AlertCircle, Shield } from "lucide-react";
 
 export default function Terms() {
-  const clauses = [
-    {
-      title: "Platform Authorization",
-      text: "By utilizing the CodebaseGPT indexing engine, you represent and warrant that you hold legitimate administrative rights or express permission to analyze the code contained within the repositories you connect."
-    },
-    {
-      title: "Fair Usage Thresholds",
-      text: "Users on the Enterprise and Professional tiers are subject to fair usage policies regarding high-frequency API calls. Excessive automated indexing that attempts to scrape our internal vector embeddings is strictly prohibited."
-    },
-    {
-      title: "AI Analysis Disclaimer",
-      text: "While Gemini 1.5 Pro provides industry-leading reasoning, CodebaseGPT makes no guarantees regarding the absolute correctness of any AI-generated explanation, bug-fix, or security audit. Final implementation remains the responsibility of the human architect."
-    },
-    {
-      title: "Intellectual Sovereignty",
-      text: "You retain 100% ownership of your source code and all intellectual property derived from its analysis. CodebaseGPT claims no rights to your data, insights, or architectures generated through our platform."
-    }
-  ];
-
   return (
     <PageLayout 
       category="Agreement"
       title="Terms of Interaction" 
       subtitle="Operational guidelines for the use of the CodebaseGPT Intelligence Network."
     >
-      <div className="max-w-4xl mx-auto space-y-32">
-        <section className="p-12 md:p-16 rounded-[3rem] bg-[#0a0f1d] border border-white/10 relative overflow-hidden group">
-           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-           <div className="relative flex flex-col md:flex-row gap-12 items-center">
-              <div className="h-20 w-20 shrink-0 rounded-[2rem] bg-background border border-white/10 flex items-center justify-center text-primary shadow-2xl">
-                 <Scale className="h-10 w-10" />
-              </div>
-              <div className="space-y-4">
-                 <h2 className="text-3xl font-black tracking-tight italic m-0">Foundational Principles</h2>
-                 <p className="text-muted-foreground/80 leading-relaxed font-medium italic m-0">
-                    Our terms are designed to protect both the user and the platform. We prioritize clarity, performance, and mutual respect for intellectual property.
-                 </p>
-              </div>
-           </div>
-        </section>
-
-        <section className="grid gap-24">
-           {clauses.map((c, i) => (
-             <div key={i} className="flex flex-col md:flex-row gap-8 items-start">
-                <div className="shrink-0 pt-1">
-                   <div className="text-xs font-black font-mono text-primary/60 tracking-widest bg-white/5 py-1 px-3 rounded-full border border-white/5 uppercase italic">Module.{String(i+1).padStart(2, '0')}</div>
-                </div>
-                <div className="space-y-4 max-w-3xl">
-                   <h3 className="text-2xl font-black italic m-0 tracking-tight">{c.title}</h3>
-                   <p className="text-lg text-muted-foreground/70 leading-relaxed font-medium italic m-0">{c.text}</p>
-                </div>
+      <div className="max-w-4xl mx-auto">
+        <div className="p-12 md:p-20 rounded-[3rem] border border-white/5 bg-white/[0.01] relative overflow-hidden group">
+          <div className="absolute inset-0 blueprint-grid opacity-5" />
+          
+          {/* Metadata */}
+          <div className="flex flex-wrap gap-8 mb-16 pb-8 border-b border-white/5 relative">
+             <div className="space-y-1">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-teal-400/40">Document Type</p>
+                <p className="text-xs font-mono text-white/60">Service Level Agreement</p>
              </div>
-           ))}
-        </section>
+             <div className="space-y-1">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-teal-400/40">Version</p>
+                <p className="text-xs font-mono text-white/60">V.2.4.0 (Unified)</p>
+             </div>
+             <div className="space-y-1">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-teal-400/40">Authority</p>
+                <p className="text-xs font-mono text-teal-400/60 uppercase">Verified Origin</p>
+             </div>
+          </div>
 
-        <div className="p-12 rounded-[2.5rem] bg-amber-500/5 border border-amber-500/10 flex gap-6 items-start italic">
-           <AlertCircle className="h-6 w-6 text-amber-500 shrink-0 mt-1" />
-           <p className="text-sm text-amber-500/80 m-0 font-medium">
-             Violation of these terms, including attempting to reverse-engineer our vector mapping algorithms, will result in immediate termination of neural access and revocation of API credentials.
-           </p>
+          <div className="prose prose-invert max-w-none space-y-16 relative">
+            <section className="space-y-8">
+              <h2 className="text-3xl font-serif italic text-white m-0">1. Usage Licensing</h2>
+              <p className="text-lg text-muted-foreground/60 leading-relaxed italic font-medium">
+                CodebaseGPT grants you a non-exclusive, non-transferable license to utilize our neural indexing nodes for the purpose of source code analysis and knowledge retrieval.
+              </p>
+            </section>
+
+            <section className="space-y-8">
+              <h2 className="text-3xl font-serif italic text-white m-0">2. Operational Boundaries</h2>
+              <p className="text-lg text-muted-foreground/60 leading-relaxed italic font-medium">
+                You agree not to use the platform for the analysis of encrypted malware or illegal cryptographic protocols. Violation of these boundaries results in immediate node termination.
+              </p>
+            </section>
+
+            <section className="space-y-8">
+              <h2 className="text-3xl font-serif italic text-white m-0">3. System Uptime Index</h2>
+              <p className="text-lg text-muted-foreground/60 leading-relaxed italic font-medium">
+                We strive for 99.9% uptime on our indexing cores. Maintenance windows for neural model upgrades will be broadcast via the control terminal 24 hours in advance.
+              </p>
+            </section>
+          </div>
+
+          {/* Verification Stamp */}
+          <div className="mt-24 pt-12 border-t border-white/5 flex items-center justify-between opacity-40">
+             <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-teal-400" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em]">CodebaseGPT Legal Auth</span>
+             </div>
+             <div className="text-[10px] font-mono">VERIFIED: SLA-APPROVED</div>
+          </div>
         </div>
       </div>
     </PageLayout>

@@ -1,6 +1,7 @@
 import React from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { HelpCircle, Search, Plus, Minus } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function FAQ() {
   const faqs = [
@@ -53,53 +54,74 @@ export default function FAQ() {
     >
       <div className="max-w-5xl mx-auto">
         {/* Search Bar Visual */}
-        <div className="relative mb-24 max-w-2xl mx-auto">
-          <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <input 
-             type="text" 
-             disabled 
-             placeholder="Search the knowledge base..." 
-             className="w-full h-16 bg-white/5 border border-white/10 rounded-2xl px-16 text-lg font-medium text-foreground placeholder:text-muted-foreground/40"
-          />
-          <div className="absolute inset-y-0 right-4 flex items-center">
-            <kbd className="hidden sm:inline-flex px-2 py-1 bg-white/10 rounded uppercase font-black text-[10px] text-muted-foreground tracking-widest border border-white/10">/</kbd>
+        <div className="relative mb-32 max-w-2xl mx-auto group">
+          <div className="absolute -inset-1 bg-teal-500/20 rounded-2xl blur opacity-25 group-hover:opacity-40 transition-opacity" />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-teal-400/40" />
+            </div>
+            <input 
+               type="text" 
+               disabled 
+               placeholder="Search the technical manual..." 
+               className="w-full h-16 bg-[#030608] border border-white/10 rounded-2xl px-16 text-sm font-bold text-white placeholder:text-muted-foreground/30 uppercase tracking-[0.2em] focus:outline-none focus:border-teal-500/30 transition-all"
+            />
+            <div className="absolute inset-y-0 right-6 flex items-center gap-2">
+              <kbd className="hidden sm:inline-flex px-2 py-1 bg-white/5 rounded border border-white/10 uppercase font-black text-[9px] text-muted-foreground/40 tracking-widest">CMD</kbd>
+              <kbd className="hidden sm:inline-flex px-2 py-1 bg-white/5 rounded border border-white/10 uppercase font-black text-[9px] text-muted-foreground/40 tracking-widest">K</kbd>
+            </div>
           </div>
         </div>
 
-        <div className="grid gap-20">
+        <div className="grid gap-24">
           {faqs.map((group, gi) => (
-            <div key={gi} className="space-y-8">
-               <h2 className="text-sm font-black uppercase tracking-[0.4em] text-primary flex items-center gap-4">
-                  <div className="h-px w-8 bg-primary/40" />
-                  {group.category}
-               </h2>
-               <div className="grid gap-4">
+            <div key={gi} className="space-y-10">
+               <div className="flex items-center gap-6">
+                 <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-teal-400/60 whitespace-nowrap">
+                    {group.category}
+                 </h2>
+                 <div className="h-px w-full bg-white/5" />
+               </div>
+
+               <div className="grid gap-6">
                   {group.questions.map((f, i) => (
-                    <div key={i} className="group p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all">
-                      <div className="flex gap-6 items-start">
-                        <div className="h-10 w-10 shrink-0 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                           <HelpCircle className="h-5 w-5 text-primary" />
+                    <motion.div 
+                      key={f.q} 
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      viewport={{ once: true }}
+                      className="group p-10 rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-default relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      
+                      <div className="flex gap-8 items-start relative">
+                        <div className="h-12 w-12 shrink-0 rounded-xl bg-teal-500/5 border border-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                           <HelpCircle className="h-5 w-5 text-teal-400/60" />
                         </div>
                         <div className="space-y-4">
-                           <h3 className="text-xl font-bold text-foreground leading-tight tracking-tight group-hover:text-primary transition-colors">{f.q}</h3>
-                           <p className="text-muted-foreground leading-relaxed italic max-w-3xl">
+                           <h3 className="text-2xl font-serif italic text-white leading-tight tracking-tight group-hover:text-teal-400 transition-colors">{f.q}</h3>
+                           <p className="text-base text-muted-foreground/60 leading-relaxed italic font-medium max-w-3xl">
                              {f.a}
                            </p>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-32 p-12 rounded-[2rem] bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 flex flex-col items-center text-center gap-8">
-           <h3 className="text-2xl font-black italic">Still need clarification?</h3>
-           <p className="text-muted-foreground max-w-md">Our technical engineers are available for specialized consultations for enterprise customers.</p>
-           <button className="px-8 py-3 rounded-xl bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest hover:scale-105 transition-all">Support Center</button>
+        <div className="mt-40 p-16 rounded-[3rem] border border-white/5 bg-white/[0.01] text-center space-y-8 relative overflow-hidden group">
+           <div className="absolute inset-0 blueprint-grid opacity-10" />
+           <div className="teal-glow w-[400px] h-[400px] -bottom-24 left-1/2 -translate-x-1/2 opacity-5" />
+           
+           <h3 className="text-4xl font-serif italic text-white relative">Still need clarification?</h3>
+           <p className="text-lg text-muted-foreground/60 max-w-md mx-auto italic relative">Our technical engineers are available for specialized consultations for enterprise customers.</p>
+           <div className="pt-4 relative">
+             <button className="px-12 py-5 rounded-2xl bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-neutral-200 transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)]">Contact Tech Support</button>
+           </div>
         </div>
       </div>
     </PageLayout>

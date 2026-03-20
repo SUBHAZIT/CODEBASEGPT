@@ -7,8 +7,8 @@
 @layer base {
   :root,
   .dark {
-    --background: 220 14% 10%;
-    --foreground: 220 10% 88%;
+    --background: 220 40% 2%;
+    --foreground: 210 20% 98%;
 
     --card: 220 13% 12%;
     --card-foreground: 220 10% 88%;
@@ -150,5 +150,77 @@
 
   .glass-panel {
     @apply bg-background/60 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+
+  .font-serif {
+    font-family: Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  .grid-line-h {
+    @apply absolute left-0 right-0 h-px bg-white/5;
+  }
+
+  .grid-line-v {
+    @apply absolute top-0 bottom-0 w-px bg-white/5;
+  }
+
+  :root,
+  .dark {
+    --background: 220 40% 2%;
+    --foreground: 210 20% 98%;
+    /* ... other variables ... */
+  }
+
+  /* Blueprint Grid */
+  .blueprint-grid {
+    background-image: 
+      linear-gradient(to right, rgba(20, 184, 166, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(20, 184, 166, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(circle at center, black, transparent 90%);
+  }
+
+  .teal-glow {
+    @apply absolute pointer-events-none blur-[120px] opacity-20 rounded-full z-0;
+    background: radial-gradient(circle at center, rgb(20, 184, 166), transparent 70%);
+  }
+
+  /* Enhanced Corner Brackets with Diagonal Guides */
+  .corner-frame {
+    @apply absolute w-14 h-14 pointer-events-none z-20;
+  }
+  
+  .corner-frame::before {
+    content: '';
+    @apply absolute w-full h-full;
+    border: 1px solid rgba(20, 184, 166, 0.15);
+  }
+
+  .corner-frame::after {
+    content: '';
+    @apply absolute w-4 h-4;
+    border: 2px solid rgba(20, 184, 166, 0.6);
+    filter: drop-shadow(0 0 4px rgba(20, 184, 166, 0.4));
+  }
+
+  .corner-frame-tl { @apply top-0 left-0; }
+  .corner-frame-tl::after { @apply top-0 left-0 border-r-0 border-b-0; }
+  .corner-frame-tl::before { @apply border-r-0 border-b-0; }
+
+  .corner-frame-tr { @apply top-0 right-0; }
+  .corner-frame-tr::after { @apply top-0 right-0 border-l-0 border-b-0; }
+  .corner-frame-tr::before { @apply border-l-0 border-b-0; }
+
+  .corner-frame-bl { @apply bottom-0 left-0; }
+  .corner-frame-bl::after { @apply bottom-0 left-0 border-r-0 border-t-0; }
+  .corner-frame-bl::before { @apply border-r-0 border-t-0; }
+
+  .corner-frame-br { @apply bottom-0 right-0; }
+  .corner-frame-br::after { @apply bottom-0 right-0 border-l-0 border-t-0; }
+  .corner-frame-br::before { @apply border-l-0 border-t-0; }
+
+  .diagonal-line {
+    @apply absolute w-px bg-gradient-to-b from-transparent via-teal-500/10 to-transparent pointer-events-none;
   }
 }

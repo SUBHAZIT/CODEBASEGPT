@@ -42,7 +42,7 @@ serve(async (req) => {
     if (!res.ok) {
       const errText = await res.text();
       return new Response(JSON.stringify({ error: `GitHub API error: ${res.status}`, details: errText }), {
-        status: res.status === 404 ? 404 : 502,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

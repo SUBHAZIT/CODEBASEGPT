@@ -5,6 +5,7 @@ import { Check, Loader2, GitBranch, Download, Cpu, Database, AlertCircle } from 
 import { Button } from "@/components/ui/button";
 import { indexRepository, generateOverview } from "@/lib/api";
 import { useRepoStore } from "@/lib/store";
+import { useUserAuth } from "@/hooks/use-user-auth";
 import { toast } from "@/hooks/use-toast";
 
 const STAGES = [
@@ -19,6 +20,7 @@ const IndexingProgress = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setRepoData, setOverview, setIndexing } = useRepoStore();
+  const { session } = useUserAuth();
 
   const [currentStage, setCurrentStage] = useState(0);
   const [fileCount, setFileCount] = useState(0);
@@ -31,12 +33,24 @@ const IndexingProgress = () => {
   useEffect(() => {
     const state = location.state as { githubUrl?: string; githubToken?: string } | null;
     if (state?.githubUrl) setGithubUrl(state.githubUrl);
-    if (state?.githubToken) setGithubToken(state.githubToken);
-  }, [location.state]);
+    
+    // Prioritize manual token from state, fallback to session provider token
+    if (state?.githubToken) {
+      setGithubToken(state.githubToken);
+    } else if (session?.provider_token) {
+      setGithubToken(session.provider_token);
+    }
+  }, [location.state, session]);
 
   useEffect(() => {
     if (!githubUrl || started.current) return;
     started.current = true;
+
+    console.log("Starting indexing for:", githubUrl);
+    console.log("GitHub Token present:", !!githubToken);
+    if (!githubToken && session?.provider_token) {
+      console.log("No manual token, but provider_token found in session.");
+    }
 
     const doIndex = async () => {
       try {

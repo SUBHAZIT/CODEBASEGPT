@@ -1,14 +1,14 @@
 import React from "react";
 import PageLayout from "@/components/layout/PageLayout";
-import { Mail, Github, Twitter, MessageSquare, MapPin, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Mail, Github, Twitter, MapPin, Shield, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Contact() {
-  const socials = [
-    { icon: <Mail className="h-5 w-5" />, label: "Protocol", info: "admin@codebasegpt.io", color: "text-blue-500" },
-    { icon: <Twitter className="h-5 w-5" />, label: "Signal", info: "@CodebaseGPT", color: "text-sky-500" },
-    { icon: <Github className="h-5 w-5" />, label: "Repository", info: "InnoFusion-HQ", color: "text-white" },
-    { icon: <MapPin className="h-5 w-5" />, label: "Nexus", info: "San Francisco, CA", color: "text-emerald-500" },
+  const contactOptions = [
+    { icon: <Mail className="h-6 w-6" />, label: "Protocol", value: "admin@codebasegpt.io" },
+    { icon: <Twitter className="h-6 w-6" />, label: "Signal", value: "@CodebaseGPT" },
+    { icon: <Github className="h-6 w-6" />, label: "Repository", value: "InnoFusion-HQ" },
+    { icon: <MapPin className="h-6 w-6" />, label: "Nexus", value: "San Francisco, CA" },
   ];
 
   return (
@@ -17,73 +17,79 @@ export default function Contact() {
       title="Establish Connection" 
       subtitle="Engage with our technical team to explore custom integrations, high-volume indexing, or neural feedback."
     >
-      <div className="grid lg:grid-cols-2 gap-24">
-        {/* Left Column: Info */}
-        <div className="space-y-16">
-          <div className="space-y-8">
-            <h3 className="text-4xl font-black tracking-tighter m-0 italic">Technical Support & Global Inquiries</h3>
-            <p className="text-lg text-muted-foreground/80 leading-relaxed font-medium italic m-0">
-               We prioritize high-depth engineering questions and enterprise partnership requests. Our typical response latency is under 12 hours.
-            </p>
-          </div>
+      <div className="max-w-5xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
+          <div className="space-y-12">
+            <div className="space-y-6">
+              <h2 className="text-4xl font-serif italic text-white leading-tight">Sync with our technical engineers.</h2>
+              <p className="text-lg text-muted-foreground/60 leading-relaxed italic font-medium">
+                Our support terminals are monitored 24/7 by neural engineers. 
+                Expect a response within 400ms of ingestion (or slightly longer for human-in-the-loop queries).
+              </p>
+            </div>
 
-          <div className="grid sm:grid-cols-2 gap-6">
-            {socials.map((s, i) => (
-              <div key={i} className="group p-6 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:bg-white/5 hover:border-primary/40 transition-all cursor-pointer">
-                <div className={s.color + " mb-4 transition-transform group-hover:scale-110"}>{s.icon}</div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">{s.label}</div>
-                <div className="text-sm font-bold tracking-tight">{s.info}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-8 rounded-[2rem] bg-[#0a0f1d] border border-white/5 space-y-4 italic">
-             <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-emerald-500">
-                <CheckCircle2 className="h-4 w-4" />
-                Network Status: Active
-             </div>
-             <p className="text-xs text-muted-foreground/60">
-                Support engineers are currently online in PST and UTC timezones.
-             </p>
-          </div>
-        </div>
-
-        {/* Right Column: High-Fidelity Form */}
-        <div className="relative group">
-           <div className="absolute -inset-1 bg-gradient-to-br from-primary via-blue-600 to-purple-600 rounded-[3rem] blur opacity-10 group-hover:opacity-20 transition-opacity duration-700" />
-           <div className="relative bg-[#030712]/60 backdrop-blur-3xl p-10 md:p-12 rounded-[3rem] border border-white/10 shadow-3xl">
-              <h4 className="text-2xl font-black italic mb-8 tracking-tight">Direct Terminal</h4>
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                <div className="grid md:grid-cols-2 gap-6">
-                   <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic ml-2">Identity.First</label>
-                      <input type="text" placeholder="ALEX" className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-6 text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all uppercase placeholder:opacity-20" />
-                   </div>
-                   <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic ml-2">Identity.Last</label>
-                      <input type="text" placeholder="VOLKOV" className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-6 text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all uppercase placeholder:opacity-20" />
+            <div className="grid gap-6">
+              {contactOptions.map((opt, i) => (
+                <div key={i} className="group p-8 rounded-[2rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all relative overflow-hidden">
+                   <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                   <div className="flex gap-6 items-center">
+                      <div className="h-12 w-12 rounded-xl bg-teal-500/5 border border-teal-500/10 flex items-center justify-center text-teal-400/60 group-hover:scale-110 transition-transform">
+                        {opt.icon}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-400/40">{opt.label}</p>
+                        <p className="text-sm font-bold text-white/80">{opt.value}</p>
+                      </div>
                    </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="space-y-3">
-                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic ml-2">Channel.Email</label>
-                   <input type="email" placeholder="ALEX@QUANTUM.TECH" className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-6 text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all uppercase placeholder:opacity-20" />
-                </div>
+            <div className="p-8 rounded-[2rem] border border-white/5 bg-white/[0.01] space-y-4 italic relative overflow-hidden group">
+               <div className="absolute inset-0 blueprint-grid opacity-5" />
+               <div className="relative flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-teal-400/60">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Network Status: Active
+               </div>
+               <p className="relative text-xs text-muted-foreground/40 leading-relaxed">
+                  Support engineers are currently online in PST and UTC timezones.
+               </p>
+            </div>
+          </div>
 
-                <div className="space-y-3">
-                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground italic ml-2">Transmission.Data</label>
-                   <textarea placeholder="DESCRIBE YOUR ARCHITECTURAL ENQUIRY..." className="w-full h-40 bg-white/5 border border-white/10 rounded-3xl px-6 py-5 text-sm font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all uppercase placeholder:opacity-20 resize-none leading-relaxed" />
-                </div>
-
-                <button className="group w-full py-5 bg-primary text-primary-foreground rounded-2xl text-xs font-black uppercase tracking-[0.3em] overflow-hidden relative shadow-[0_20px_40px_rgba(var(--primary),0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all">
-                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-                   <div className="relative flex items-center justify-center gap-3">
-                      Initiate Handshake
-                      <ArrowRight className="h-4 w-4" />
-                   </div>
-                </button>
-              </form>
-           </div>
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-teal-500/10 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-20 transition-opacity" />
+            <div className="relative p-12 rounded-[2.5rem] border border-white/10 bg-[#030608] shadow-2xl space-y-8 overflow-hidden">
+               <div className="absolute inset-0 blueprint-grid opacity-5" />
+               <div className="relative space-y-6">
+                 <div className="space-y-2">
+                   <label className="text-[9px] font-black uppercase tracking-[0.3em] text-teal-400/40 block ml-1">Terminal ID / Name</label>
+                   <input 
+                     placeholder="ENTER FULL NAME..." 
+                     className="w-full h-14 bg-white/[0.02] border border-white/10 rounded-xl px-5 text-xs font-bold text-white placeholder:text-muted-foreground/20 uppercase tracking-widest focus:outline-none focus:border-teal-500/30 transition-all"
+                   />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-[9px] font-black uppercase tracking-[0.3em] text-teal-400/40 block ml-1">Ingestion Point / Email</label>
+                   <input 
+                     placeholder="USER@ORG.DOMAIN" 
+                     className="w-full h-14 bg-white/[0.02] border border-white/10 rounded-xl px-5 text-xs font-bold text-white placeholder:text-muted-foreground/20 uppercase tracking-widest focus:outline-none focus:border-teal-500/30 transition-all"
+                   />
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-[9px] font-black uppercase tracking-[0.3em] text-teal-400/40 block ml-1">Transmission Data / Message</label>
+                   <textarea 
+                     rows={5}
+                     placeholder="INITIATING TRANSMISSION..." 
+                     className="w-full bg-white/[0.02] border border-white/10 rounded-xl p-5 text-xs font-bold text-white placeholder:text-muted-foreground/20 uppercase tracking-widest focus:outline-none focus:border-teal-500/30 transition-all resize-none"
+                   />
+                 </div>
+                 <button className="w-full h-14 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-neutral-200 transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+                   Broadcast Signal
+                 </button>
+               </div>
+            </div>
+          </div>
         </div>
       </div>
     </PageLayout>

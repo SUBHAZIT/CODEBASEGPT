@@ -61,51 +61,67 @@ export default function Features() {
         
         <div className="grid lg:grid-cols-3 gap-8">
           {coreFeatures.map((f, i) => (
-            <div key={i} className="relative group p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-primary/40 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl" />
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * i }}
+              className="group relative p-10 rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all cursor-default overflow-hidden"
+            >
+              {/* Corner Frame Accents */}
+              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="teal-glow w-32 h-32 -top-16 -right-16 opacity-0 group-hover:opacity-10 transition-opacity" />
+              
               <div className="relative">
-                <div className="p-3 w-fit rounded-2xl bg-background/80 border border-white/5 mb-6 group-hover:scale-110 group-hover:bg-primary/10 transition-all duration-500 shadow-xl">
-                  {f.icon}
+                <div className="w-12 h-12 rounded-xl bg-teal-500/5 border border-teal-500/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+                  <div className="text-teal-400/80">{f.icon}</div>
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground tracking-tight">{f.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6 italic">{f.description}</p>
-                <ul className="space-y-2">
+                <h3 className="text-2xl font-serif italic mb-4 text-white group-hover:text-teal-400 transition-colors">{f.title}</h3>
+                <p className="text-sm text-muted-foreground/60 leading-relaxed mb-8 italic">{f.description}</p>
+                <div className="space-y-3">
                   {f.details.map((d, di) => (
-                    <li key={di} className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2">
-                      <div className="h-1 w-1 rounded-full bg-primary/40" />
-                      {d}
-                    </li>
+                    <div key={di} className="flex items-center gap-3">
+                      <div className="h-px w-3 bg-teal-500/30" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">{d}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
       {/* High-Resolution Diagram Placeholder (Visual Mockup) */}
-      <section className="my-32 p-1 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-white/5 to-transparent border border-white/5 overflow-hidden">
-        <div className="bg-[#0a0f1d]/60 rounded-[2.4rem] p-12 overflow-hidden relative group">
-          <div className="relative flex flex-col md:flex-row items-center gap-16">
-            <div className="flex-grow space-y-6">
-              <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest w-fit">
-                Technology Stacks
+      <section className="my-40 relative">
+        <div className="absolute inset-0 blueprint-grid opacity-10 rounded-[3rem]" />
+        <div className="relative p-12 lg:p-20 rounded-[3rem] border border-white/5 bg-white/[0.01] backdrop-blur-3xl overflow-hidden group">
+          {/* Corner Frames */}
+          <div className="corner-frame corner-frame-tl w-16 h-16 opacity-30" />
+          <div className="corner-frame corner-frame-br w-16 h-16 opacity-30" />
+          
+          <div className="relative flex flex-col lg:flex-row items-center gap-16">
+            <div className="flex-grow space-y-8">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-teal-500/20 bg-teal-500/5 w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-teal-400">Semantic Stack Analysis</span>
               </div>
-              <h2 className="text-4xl font-black tracking-tighter leading-none">Global Semantic Understanding</h2>
-              <p className="text-muted-foreground leading-relaxed max-w-xl font-medium italic">
+              <h2 className="text-4xl lg:text-5xl font-serif italic tracking-tight text-white leading-tight">Global Semantic Understanding</h2>
+              <p className="text-lg text-muted-foreground/60 leading-relaxed max-w-xl italic font-medium">
                 Our engine treats your repository as a single multidimensional entity. 
-                Instead of searching for keywords, we find concepts.
+                Instead of searching for keywords, we map concepts across the entire stack.
               </p>
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex flex-wrap gap-3 pt-4">
                 {['TypeScript', 'Go', 'Rust', 'Java', 'Python', 'C++'].map(lang => (
-                  <span key={lang} className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-xs font-mono font-bold text-muted-foreground/80 hover:text-foreground hover:bg-white/10 transition-all cursor-default">{lang}</span>
+                   <span key={lang} className="px-4 py-2 rounded-xl border border-white/5 bg-white/5 text-[10px] uppercase font-bold text-muted-foreground/40 hover:text-teal-400 hover:border-teal-500/20 transition-all cursor-default tracking-widest">{lang}</span>
                 ))}
               </div>
             </div>
             <div className="flex-shrink-0 relative">
-               <div className="absolute -inset-4 bg-primary/20 blur-3xl opacity-20" />
-               <div className="relative w-64 h-64 border border-white/10 rounded-3xl bg-white/5 flex items-center justify-center p-8">
-                  <Globe className="h-32 w-32 text-primary/40" />
+               <div className="teal-glow w-[300px] h-[300px] opacity-20" />
+                <div className="relative w-72 h-72 border border-white/10 rounded-full flex items-center justify-center p-8 bg-[#030608]">
+                  <div className="absolute inset-0 blueprint-grid opacity-20 rounded-full" />
+                  <Globe className="h-32 w-32 text-teal-400/40 drop-shadow-[0_0_30px_rgba(45,212,191,0.2)]" />
                </div>
             </div>
           </div>
@@ -121,7 +137,7 @@ export default function Features() {
         
         <div className="grid md:grid-cols-3 gap-8">
           {advancedTools.map((t, i) => (
-            <div key={i} className="flex flex-col gap-4 p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/5 transition-all">
+            <div key={i} className="flex flex-col gap-4 p-8 rounded-3xl bg-card border border-border hover:bg-card/50 transition-all">
               <div className="text-primary/60">{t.icon}</div>
               <h4 className="font-bold text-foreground tracking-tight">{t.title}</h4>
               <p className="text-sm text-muted-foreground/80 leading-relaxed italic">{t.description}</p>
@@ -131,13 +147,14 @@ export default function Features() {
       </section>
 
       {/* Final CTA */}
-      <section className="mt-32 pt-24 border-t border-white/5 text-center px-8">
-        <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-8 bg-gradient-to-r from-primary via-white to-primary bg-clip-text text-transparent"> Ready to index the future?</h2>
-        <p className="text-muted-foreground font-medium mb-12 max-w-lg mx-auto">
+      <section className="mt-48 pt-24 border-t border-white/5 text-center px-8 relative overflow-hidden">
+        <div className="teal-glow w-[600px] h-[600px] -bottom-24 left-1/2 -translate-x-1/2 opacity-5" />
+        <h2 className="text-5xl md:text-7xl font-serif italic tracking-tight mb-8 text-white max-w-4xl mx-auto"> Ready to index the future?</h2>
+        <p className="text-lg text-muted-foreground/60 font-medium mb-16 max-w-2xl mx-auto italic leading-relaxed">
           Start your transformation today. Connect your first repository and see the difference AI intelligence makes.
         </p>
-        <button className="px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-black text-sm uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_rgba(var(--primary),0.3)]">
-          Index First Repository
+        <button className="px-12 py-5 rounded-2xl bg-white text-black font-black text-[10px] uppercase tracking-[0.3em] hover:bg-neutral-200 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+          Initiate Repository Indexing
         </button>
       </section>
     </PageLayout>
