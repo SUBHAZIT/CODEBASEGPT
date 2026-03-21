@@ -4,7 +4,7 @@ import {
   MessageSquare, FileCode, ChevronLeft, Code2,
   Layers, Package, AlertTriangle, BookOpen, Network, Shield, LayoutDashboard, CircleDot,
   Sparkles, FolderOpen, Settings, ArrowUpRight, LogIn, Info, Database, GitBranch,
-  User,
+  User, Terminal
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DEMO_REPOS, DEMO_OVERVIEW, DEMO_FILE_TREE } from "@/lib/mock-data";
@@ -13,6 +13,7 @@ import DependencyGraph from "@/components/dashboard/DependencyGraph";
 import CodebaseSearch from "@/components/dashboard/CodebaseSearch";
 import { useCompactMode } from "@/hooks/use-compact-mode";
 import { useState } from "react";
+import { openInStackBlitz } from "@/lib/webcontainer";
 
 const QUESTION_ICONS = [LogIn, Info, Database, GitBranch];
 
@@ -82,13 +83,25 @@ const RepoDashboard = () => {
       <div className="max-w-6xl mx-auto px-6 py-8 flex-1 w-full">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
           {/* Repo breadcrumb */}
-          <div className="flex items-center gap-2 mb-5">
-            <span className="text-sm text-muted-foreground">{repo.owner}</span>
-            <span className="text-sm text-muted-foreground">/</span>
-            <span className="text-sm text-foreground font-semibold">{repo.name}</span>
-            <button className="text-muted-foreground hover:text-foreground transition-colors ml-1">
-              <Settings className="h-3.5 w-3.5" />
-            </button>
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{repo.owner}</span>
+              <span className="text-sm text-muted-foreground">/</span>
+              <span className="text-sm text-foreground font-semibold">{repo.name}</span>
+              <button className="text-muted-foreground hover:text-foreground transition-colors ml-1">
+                <Settings className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => openInStackBlitz(repo.owner, repo.name)}
+              className="h-8 gap-2 border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary hover:text-primary"
+            >
+              <Terminal className="h-3.5 w-3.5" />
+              <span className="text-xs">OPEN IN IDE</span>
+            </Button>
           </div>
 
           {/* Stats pills */}
@@ -102,10 +115,10 @@ const RepoDashboard = () => {
               <div
                 key={stat.label}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-medium tracking-wide ${stat.variant === "primary"
-                    ? "border-primary/30 bg-primary/10 text-primary"
-                    : stat.variant === "warning"
-                      ? "border-warning/30 bg-warning/10 text-warning"
-                      : "border-border bg-card text-foreground"
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : stat.variant === "warning"
+                    ? "border-warning/30 bg-warning/10 text-warning"
+                    : "border-border bg-card text-foreground"
                   }`}
               >
                 <stat.icon className="h-3.5 w-3.5" />
