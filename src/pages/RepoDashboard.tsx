@@ -14,6 +14,17 @@ import CodebaseSearch from "@/components/dashboard/CodebaseSearch";
 import { useCompactMode } from "@/hooks/use-compact-mode";
 import { useState } from "react";
 import { openInStackBlitz } from "@/lib/webcontainer";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { useUserAuth } from "@/hooks/use-user-auth";
+import { LogOut, User as UserIcon, Settings as SettingsIcon } from "lucide-react";
 
 const QUESTION_ICONS = [LogIn, Info, Database, GitBranch];
 
@@ -21,6 +32,7 @@ const RepoDashboard = () => {
   const { repoId } = useParams();
   const navigate = useNavigate();
   const compact = useCompactMode();
+  const { user, logout } = useUserAuth();
   const { meta: storeMeta, overview: storeOverview, fileTree: storeFileTree, fileContents: storeFileContents } = useRepoStore();
   const [graphExpanded, setGraphExpanded] = useState(false);
 
@@ -72,9 +84,48 @@ const RepoDashboard = () => {
           </div>
           <div className="flex items-center gap-3">
             {!compact && <CodebaseSearch repoId={repoId || repo.id} />}
-            <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center">
-              <User className="h-3.5 w-3.5 text-muted-foreground" />
-            </div>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-border p-0 overflow-hidden hover:bg-accent/50">
+                    <Avatar className="h-full w-full">
+                      <AvatarImage src={user.user_metadata?.avatar_url} />
+                      <AvatarFallback className="text-[10px] font-bold">{user.user_metadata?.user_name?.[0]}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel className="font-semibold text-xs py-3 px-4">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-foreground">{user.user_metadata?.user_name}</span>
+                      <span className="text-[10px] text-muted-foreground font-medium">{user.email}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs py-3 px-4 cursor-pointer">
+                    <UserIcon className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/settings")} className="text-xs py-3 px-4 cursor-pointer">
+                    <SettingsIcon className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => logout()} className="text-xs py-3 px-4 text-destructive focus:text-destructive cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <button 
+                onClick={() => navigate("/profile")} 
+                className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
+              >
+                <UserIcon className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -88,7 +139,7 @@ const RepoDashboard = () => {
               <span className="text-sm text-muted-foreground">{repo.owner}</span>
               <span className="text-sm text-muted-foreground">/</span>
               <span className="text-sm text-foreground font-semibold">{repo.name}</span>
-              <button className="text-muted-foreground hover:text-foreground transition-colors ml-1">
+              <button onClick={() => navigate("/settings")} className="text-muted-foreground hover:text-foreground transition-colors ml-1">
                 <Settings className="h-3.5 w-3.5" />
               </button>
             </div>
