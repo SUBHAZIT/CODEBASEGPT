@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Code2, Github, User, LogOut, Search, Brain, Zap, MessageSquare, Shield, GitBranch } from "lucide-react";
+import { ChevronLeft, Code2, Github, User, LogOut, Search, Brain, Zap, MessageSquare, Shield, GitBranch, Settings as SettingsIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useUserAuth } from "@/hooks/use-user-auth";
 import { 
@@ -66,9 +66,13 @@ const PageLayout: React.FC<PageLayoutProps> = ({ title, subtitle, children, cate
                 <DropdownMenuContent className="w-56 bg-[#030608] border-white/10 backdrop-blur-xl" align="end">
                   <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-white/5" />
-                  <DropdownMenuItem className="text-[10px] uppercase tracking-widest focus:bg-white/5 cursor-pointer">
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="text-[10px] uppercase tracking-widest focus:bg-white/5 cursor-pointer">
                     <User className="mr-2 h-3.5 w-3.5" /> Profile
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/settings")} className="text-[10px] uppercase tracking-widest focus:bg-white/5 cursor-pointer">
+                    <SettingsIcon className="mr-2 h-3.5 w-3.5" /> Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/5" />
                   <DropdownMenuItem onClick={() => logout()} className="text-[10px] uppercase tracking-widest focus:bg-white/5 cursor-pointer text-red-400 focus:text-red-400">
                     <LogOut className="mr-2 h-3.5 w-3.5" /> Log out
                   </DropdownMenuItem>

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import {
   ArrowRight, Zap, MessageSquare, FileCode, Code2, Lock, ChevronDown,
-  Shield, GitBranch, Search, Brain, BarChart3, Bug, Github, LogOut, User
+  Shield, GitBranch, Search, Brain, BarChart3, Bug, Github, LogOut, User, Settings as SettingsIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -263,7 +263,16 @@ const Landing = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-white/5" />
-                  <DropdownMenuItem onClick={() => logout()} className="text-xs py-3 px-4 text-destructive focus:text-destructive">
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs py-3 px-4 focus:bg-white/5 cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/settings")} className="text-xs py-3 px-4 focus:bg-white/5 cursor-pointer">
+                    <SettingsIcon className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/5" />
+                  <DropdownMenuItem onClick={() => logout()} className="text-xs py-3 px-4 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
