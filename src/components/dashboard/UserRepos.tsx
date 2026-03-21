@@ -150,7 +150,7 @@ export function UserRepos({ onIndex }: UserReposProps) {
                   <Button 
                     size="sm" 
                     onClick={() => onIndex(repo.html_url)}
-                    className="h-7 px-3 text-[10px] font-bold uppercase tracking-wider"
+                    className="h-7 px-3 text-[10px] font-black uppercase tracking-widest bg-teal-500 text-black hover:bg-teal-400 transition-all rounded-lg"
                   >
                     Index Repo
                   </Button>

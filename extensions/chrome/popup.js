@@ -28,12 +28,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         indexBtn.textContent = "Started!";
         setTimeout(() => {
           indexBtn.disabled = false;
-          indexBtn.textContent = "Index This Repo";
+          indexBtn.textContent = "Index Repo";
         }, 2000);
       } else {
         alert("Error: " + response.error);
         indexBtn.disabled = false;
-        indexBtn.textContent = "Index This Repo";
+        indexBtn.textContent = "Index Repo";
       }
     });
   });

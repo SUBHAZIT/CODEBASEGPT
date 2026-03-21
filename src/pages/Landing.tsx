@@ -283,7 +283,7 @@ const Landing = () => {
                 <Button variant="ghost" size="sm" onClick={() => setShowLoginDialog(true)} className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors">
                   Log in
                 </Button>
-                <Button size="sm" onClick={() => setShowLoginDialog(true)} className="h-9 px-5 text-[10px] font-black uppercase tracking-[0.2em] bg-white text-black hover:bg-white/90 transition-all rounded-full shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                <Button size="sm" onClick={() => setShowLoginDialog(true)} className="h-9 px-5 text-[10px] font-black uppercase tracking-[0.2em] bg-teal-500 text-black hover:bg-teal-400 transition-all rounded-full shadow-[0_0_20px_rgba(20,184,166,0.2)]">
                   Try CodebaseGPT
                 </Button>
               </div>
@@ -361,7 +361,7 @@ const Landing = () => {
                     className="w-full bg-transparent border-none outline-none font-mono text-sm placeholder:text-muted-foreground/30 text-foreground"
                   />
                 </div>
-                <Button onClick={handleIndex} className="h-12 px-8 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[11px] hover:bg-white/90 hover:scale-105 transition-all active:scale-95 shadow-xl shrink-0">
+                <Button onClick={handleIndex} className="h-12 px-8 rounded-2xl bg-teal-500 text-black font-black uppercase tracking-widest text-[11px] hover:bg-teal-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_30px_rgba(20,184,166,0.2)] shrink-0">
                   Index Repository <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
