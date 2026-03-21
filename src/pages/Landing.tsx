@@ -341,7 +341,7 @@ const Landing = () => {
 
             <h1 className="text-5xl md:text-8xl font-serif leading-[1.05] tracking-tight mb-8">
               The most complex codebases <br />
-              <span className="italic opacity-80">decoded in seconds.</span>
+              <span className="italic text-teal-500">decoded in seconds.</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground font-medium italic max-w-2xl mb-12 leading-relaxed">
