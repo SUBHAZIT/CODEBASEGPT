@@ -334,7 +334,7 @@ const Landing = () => {
               <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md">
                 <Github className="h-3 w-3 text-white/40" />
                 <span className="text-[11px] font-bold tracking-widest uppercase text-white/60">
-                  Trusted by {visitorCount !== null ? <CountUp end={visitorCount} /> : "10k"}+ Developers
+                  Trusted by {visitorCount !== null ? <CountUp end={visitorCount} /> : "0"}+ Developers
                 </span>
               </div>
             </div>
@@ -592,9 +592,9 @@ const Landing = () => {
               <Button size="lg" onClick={handleIndex} className="h-14 px-10 rounded-full bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-neutral-200 transition-all shadow-2xl">
                 Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="lg" 
+              <Button
+                variant="ghost"
+                size="lg"
                 onClick={() => navigate("/our-philosophy")}
                 className="h-14 px-10 rounded-full border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/5"
               >
