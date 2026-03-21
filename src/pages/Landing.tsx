@@ -592,7 +592,12 @@ const Landing = () => {
               <Button size="lg" onClick={handleIndex} className="h-14 px-10 rounded-full bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-neutral-200 transition-all shadow-2xl">
                 Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="lg" className="h-14 px-10 rounded-full border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/5">
+              <Button 
+                variant="ghost" 
+                size="lg" 
+                onClick={() => navigate("/our-philosophy")}
+                className="h-14 px-10 rounded-full border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/5"
+              >
                 Our Philosophy
               </Button>
             </div>

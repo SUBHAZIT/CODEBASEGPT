@@ -24,6 +24,7 @@ import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import OurPhilosophy from "./pages/OurPhilosophy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => {
               <Route path="/contact" element={<Contact />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/our-philosophy" element={<OurPhilosophy />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
