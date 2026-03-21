@@ -206,8 +206,14 @@
 
   <div class="card">
     <h2>Quick Links</h2>
-    <button id="open-dashboard" class="btn btn-secondary">Dashboard</button>
-    <button id="open-chat" class="btn btn-secondary">AI Chat</button>
+    <div style="display: flex; gap: 8px;">
+      <button id="open-dashboard" class="btn btn-secondary" style="margin-top: 0; flex: 1;">Dashboard</button>
+      <button id="open-chat" class="btn btn-secondary" style="margin-top: 0; flex: 1;">AI Chat</button>
+    </div>
+    <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 8px; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;">CLOUD SYNC</span>
+      <button id="config-url" style="background: transparent; border: none; color: var(--primary); font-size: 8px; cursor: pointer; text-decoration: underline; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; font-weight: 800;">Change URL</button>
+    </div>
   </div>
 
   <div class="status">v1.0.0 | Connected</div>

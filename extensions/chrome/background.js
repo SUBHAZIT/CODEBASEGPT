@@ -20,6 +20,13 @@ async function handleIndexRepo(githubUrl, sendResponse) {
     });
 
     const data = await response.json();
+    
+    // Store the repoId for this URL for later use in the popup
+    if (data.repoId) {
+      const storageKey = `repo_${githubUrl.toLowerCase().replace(/\/$/, "")}`;
+      await chrome.storage.local.set({ [storageKey]: data.repoId });
+    }
+
     sendResponse({ success: true, data });
   } catch (error) {
     console.error("Error indexing repo:", error);

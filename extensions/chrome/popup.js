@@ -3,6 +3,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const repoNameDiv = document.getElementById('repo-name');
   const indexBtn = document.getElementById('index-now');
   
+  // Get production URL from storage or fallback to localhost
+  const { prod_url } = await chrome.storage.local.get('prod_url');
+  const BASE_URL = prod_url || 'https://codebasegpt.in';
+  
+  // Try to find a stored repoId for this tab
+  const tabUrl = tab.url.toLowerCase().replace(/\/$/, "");
+  const storageKey = `repo_${tabUrl}`;
+  const repoData = await chrome.storage.local.get(storageKey);
+  const currentRepoId = repoData[storageKey];
+  
   if (tab.url.includes('github.com')) {
     const parts = new URL(tab.url).pathname.split('/');
     if (parts.length >= 3) {
@@ -39,10 +49,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   document.getElementById('open-dashboard').addEventListener('click', () => {
-    chrome.tabs.create({ url: 'http://localhost:5173/dashboard' }); // Assuming local dev for now
+    const url = currentRepoId ? `${BASE_URL}/repo/${currentRepoId}` : `${BASE_URL}`;
+    chrome.tabs.create({ url });
   });
 
   document.getElementById('open-chat').addEventListener('click', () => {
-    chrome.tabs.create({ url: 'http://localhost:5173/chat' });
+    const url = currentRepoId ? `${BASE_URL}/repo/${currentRepoId}/chat` : `${BASE_URL}`;
+    chrome.tabs.create({ url });
+  });
+
+  document.getElementById('config-url').addEventListener('click', () => {
+    const newUrl = prompt("Enter your production URL (e.g., https://codebasegpt.pages.dev):", BASE_URL);
+    if (newUrl) {
+      const sanitized = newUrl.replace(/\/$/, "");
+      chrome.storage.local.set({ prod_url: sanitized }, () => {
+        window.location.reload();
+      });
+    }
   });
 });

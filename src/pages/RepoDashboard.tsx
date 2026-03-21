@@ -21,7 +21,7 @@ const RepoDashboard = () => {
   const { repoId } = useParams();
   const navigate = useNavigate();
   const compact = useCompactMode();
-  const { meta: storeMeta, overview: storeOverview, fileTree: storeFileTree } = useRepoStore();
+  const { meta: storeMeta, overview: storeOverview, fileTree: storeFileTree, fileContents: storeFileContents } = useRepoStore();
   const [graphExpanded, setGraphExpanded] = useState(false);
 
   const repo = storeMeta || DEMO_REPOS.find((r) => r.id === repoId) || DEMO_REPOS[0];
@@ -96,7 +96,7 @@ const RepoDashboard = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => openInStackBlitz(repo.owner, repo.name)}
+              onClick={() => openInStackBlitz(repo.name, storeFileContents)}
               className="h-8 gap-2 border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary hover:text-primary"
             >
               <Terminal className="h-3.5 w-3.5" />
