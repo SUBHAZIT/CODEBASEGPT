@@ -14,7 +14,7 @@ serve(async (req) => {
 
     if (!owner || !repo) {
       return new Response(JSON.stringify({ error: "owner and repo are required" }), {
-        status: 400,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -71,7 +71,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("repo-issues error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

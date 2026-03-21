@@ -43,19 +43,22 @@ const IndexingProgress = () => {
   }, [location.state, session]);
 
   useEffect(() => {
-    if (!githubUrl || started.current) return;
+    // Wait for githubToken if we have a session but it hasn't loaded yet
+    if (session && !githubToken) {
+      console.log("Waiting for session provider_token...");
+      return;
+    }
+
+    if (started.current) return;
     started.current = true;
 
     console.log("Starting indexing for:", githubUrl);
     console.log("GitHub Token present:", !!githubToken);
-    if (!githubToken && session?.provider_token) {
-      console.log("No manual token, but provider_token found in session.");
-    }
 
     const doIndex = async () => {
       try {
-        setCurrentStage(1);
         setIndexing(true, 1, "Fetching file tree...");
+        setCurrentStage(1);
 
         const stageTimer = setInterval(() => {
           setFileCount((c) => Math.min(c + Math.floor(Math.random() * 8 + 2), 500));
@@ -100,7 +103,7 @@ const IndexingProgress = () => {
     };
 
     doIndex();
-  }, [githubUrl, navigate, setRepoData, setOverview, setIndexing]);
+  }, [githubUrl, githubToken, navigate, setRepoData, setOverview, setIndexing]);
 
   const displayUrl = githubUrl
     ? githubUrl.replace("https://github.com/", "")

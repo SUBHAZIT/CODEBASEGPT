@@ -50,7 +50,7 @@ serve(async (req) => {
     const parsed = parseGitHubUrl(githubUrl);
     if (!parsed) {
       return new Response(JSON.stringify({ error: "Invalid GitHub URL" }), {
-        status: 400,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -62,6 +62,9 @@ serve(async (req) => {
     };
     if (githubToken) {
       headers.Authorization = `Bearer ${githubToken}`;
+      console.log("Using provided GitHub token (starts with: " + githubToken.substring(0, 4) + ")");
+    } else {
+      console.log("No GitHub token provided to Edge Function");
     }
 
     // Step 1: Get repo info
@@ -162,7 +165,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("repo-index error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

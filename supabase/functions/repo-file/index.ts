@@ -23,7 +23,7 @@ serve(async (req) => {
 
     if (!owner || !repo || !path) {
       return new Response(JSON.stringify({ error: "owner, repo and path are required" }), {
-        status: 400,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -53,14 +53,14 @@ serve(async (req) => {
     // If it's a directory, GitHub returns an array.
     if (Array.isArray(data)) {
       return new Response(JSON.stringify({ error: "Path is a directory, not a file" }), {
-        status: 400,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     if (data.encoding !== "base64" || !data.content) {
       return new Response(JSON.stringify({ error: "Unsupported file encoding" }), {
-        status: 415,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -80,7 +80,7 @@ serve(async (req) => {
   } catch (e) {
     console.error("repo-file error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500,
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
