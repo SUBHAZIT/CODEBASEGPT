@@ -43,13 +43,12 @@ const IndexingProgress = () => {
   }, [location.state, session]);
 
   useEffect(() => {
-    // Wait for githubToken if we have a session but it hasn't loaded yet
-    if (session && !githubToken) {
-      console.log("Waiting for session provider_token...");
+    if (!githubUrl || (session && !githubToken) || started.current) {
+      if (session && !githubToken && githubUrl) {
+        console.log("Waiting for session provider_token...");
+      }
       return;
     }
-
-    if (started.current) return;
     started.current = true;
 
     console.log("Starting indexing for:", githubUrl);
