@@ -7,6 +7,7 @@ import { indexRepository, generateOverview } from "@/lib/api";
 import { useRepoStore } from "@/lib/store";
 import { useUserAuth } from "@/hooks/use-user-auth";
 import { toast } from "@/hooks/use-toast";
+import { useSettingsStore } from "@/lib/settings-store";
 
 const STAGES = [
   { label: "Fetching file tree", icon: GitBranch },
@@ -21,6 +22,7 @@ const IndexingProgress = () => {
   const location = useLocation();
   const { setRepoData, setOverview, setIndexing } = useRepoStore();
   const { session } = useUserAuth();
+  const { settings } = useSettingsStore();
 
   const [currentStage, setCurrentStage] = useState(0);
   const [fileCount, setFileCount] = useState(0);
@@ -56,9 +58,26 @@ const IndexingProgress = () => {
 
     const doIndex = async () => {
       try {
+        // Check cache first
+        if (settings.cacheIndexData) {
+          const cacheKey = `repo_cache_${githubUrl}`;
+          const cached = localStorage.getItem(cacheKey);
+          if (cached) {
+            console.log("Found cached index for:", githubUrl);
+            const data = JSON.parse(cached);
+            setRepoData(data);
+            setCurrentStage(4);
+            setDone(true);
+            setIndexing(false);
+            setTimeout(() => navigate(`/repo/${data.repoId}`), 800);
+            return;
+          }
+        }
+
         setIndexing(true, 1, "Fetching file tree...");
         setCurrentStage(1);
-
+        
+        // ... rest of the existing indexing logic ...
         const stageTimer = setInterval(() => {
           setFileCount((c) => Math.min(c + Math.floor(Math.random() * 8 + 2), 500));
         }, 100);
@@ -74,14 +93,21 @@ const IndexingProgress = () => {
         setFileCount(data.totalFiles);
         setCurrentStage(3);
 
-        setRepoData({
+        const repoData = {
           repoId: data.repoId,
           meta: data.meta,
           fileTree: data.fileTree,
           fileContents: data.fileContents,
           repoContext: data.repoContext,
           githubToken,
-        });
+        };
+
+        setRepoData(repoData);
+
+        // Save to cache if enabled
+        if (settings.cacheIndexData) {
+          localStorage.setItem(`repo_cache_${githubUrl}`, JSON.stringify(repoData));
+        }
 
         setCurrentStage(4);
         try {

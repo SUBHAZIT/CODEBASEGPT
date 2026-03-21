@@ -14,12 +14,14 @@ import { createChatSession, updateSessionMessages, loadChatSession } from "@/lib
 import { getChatHistory, saveChatHistoryEntry, removeChatHistoryEntry, type ChatHistoryEntry } from "@/lib/chat-history";
 import { toast } from "@/hooks/use-toast";
 import { useCompactMode } from "@/hooks/use-compact-mode";
+import { useSettingsStore } from "@/lib/settings-store";
 
 const ChatInterface = () => {
   const { repoId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const compact = useCompactMode();
+  const { settings } = useSettingsStore();
   const { meta: storeMeta, fileTree: storeFileTree, repoContext, githubToken } = useRepoStore();
 
   const repo = storeMeta || DEMO_REPOS.find((r) => r.id === repoId) || DEMO_REPOS[0];
@@ -55,6 +57,8 @@ const ChatInterface = () => {
   }, [messages]);
 
   const persistToHistory = useCallback(async (msgs: ChatMessage[], sid: string) => {
+    if (!settings.autoSaveChatHistory) return;
+    
     const lastMsg = msgs.filter((m) => m.role === "assistant").pop();
     saveChatHistoryEntry({
       sessionId: sid,
@@ -66,10 +70,12 @@ const ChatInterface = () => {
       updatedAt: new Date().toISOString(),
     });
     setChatHistory(getChatHistory().filter((h) => h.repoId === repoId));
-  }, [repoId, repo]);
+  }, [repoId, repo, settings.autoSaveChatHistory]);
 
   const ensureSession = async (): Promise<string> => {
     if (sessionId) return sessionId;
+    if (!settings.autoSaveChatHistory) return "local-session-" + Date.now();
+
     const sid = await createChatSession(
       repoId || "unknown", repo,
       repoContext || `Repository: ${repo.name} by ${repo.owner}`
@@ -106,8 +112,10 @@ const ChatInterface = () => {
           const citations = extractCitations(fullContent);
           setMessages((prev) => {
             const updated = prev.map((m) => m.id === assistantId ? { ...m, content: fullContent, citations } : m);
-            updateSessionMessages(sid, updated);
-            persistToHistory(updated, sid);
+            if (settings.autoSaveChatHistory) {
+              updateSessionMessages(sid, updated);
+              persistToHistory(updated, sid);
+            }
             return updated;
           });
           setIsStreaming(false);
