@@ -46,7 +46,7 @@ serve(async (req) => {
   try {
     const { githubUrl, githubToken } = await req.json();
     console.log(`Indexing repository: ${githubUrl}`);
-    
+
     const parsed = parseGitHubUrl(githubUrl);
     if (!parsed) {
       return new Response(JSON.stringify({ error: "Invalid GitHub URL" }), {
@@ -74,7 +74,7 @@ serve(async (req) => {
       let errorMsg = `GitHub API error: ${repoRes.status}`;
       if (repoRes.status === 404) errorMsg = "Repository not found or private (access denied)";
       if (repoRes.status === 401 || repoRes.status === 403) errorMsg = "GitHub API authorization failed or rate limit exceeded";
-      
+
       console.error(`GitHub API error (Repo Info): ${repoRes.status}`, errText);
       return new Response(JSON.stringify({ error: errorMsg, details: errText }), {
         status: 200, // Return 200 so the client can read the error message
@@ -100,38 +100,55 @@ serve(async (req) => {
     // Filter source files
     const sourceFiles = (treeData.tree || [])
       .filter((item: any) => item.type === "blob" && shouldIncludeFile(item.path))
-      .slice(0, 200); // Limit to 200 files to stay within limits
-
-    // Step 3: Download file contents (batch, limited)
-    const filesToFetch = sourceFiles.slice(0, 50); // Fetch top 50 files content
+    // Step 3: Download file contents (batched to avoid GitHub secondary rate limits)
+    const filesToFetch = sourceFiles.slice(0, 200);
     const fileContents: { path: string; content: string; size: number }[] = [];
+    const BATCH_SIZE = 5;
 
-    const fetchPromises = filesToFetch.map(async (file: any) => {
-      try {
-        const res = await fetch(
-          `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
-          { headers }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          if (data.encoding === "base64" && data.content) {
-            const decoded = atob(data.content.replace(/\n/g, ""));
-            // Limit each file to 3000 chars
+    for (let i = 0; i < filesToFetch.length; i += BATCH_SIZE) {
+      const batch = filesToFetch.slice(i, i + BATCH_SIZE);
+      
+      const batchPromises = batch.map(async (file: any) => {
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
+            { headers }
+          );
+          
+          if (res.ok) {
+            const data = await res.json();
+            if (data.encoding === "base64" && data.content) {
+              const decoded = atob(data.content.replace(/\n/g, ""));
+              fileContents.push({
+                path: file.path,
+                content: decoded.slice(0, 3000),
+                size: data.size,
+              });
+            }
+          } else {
+            await res.text();
             fileContents.push({
               path: file.path,
-              content: decoded.slice(0, 3000),
-              size: data.size,
+              content: `// Warning: Failed to fetch (HTTP ${res.status}).`,
+              size: 0,
             });
           }
-        } else {
-          await res.text(); // consume body
+        } catch (e) {
+          fileContents.push({
+            path: file.path,
+            content: `// Warning: Fetch Error: ${e instanceof Error ? e.message : "Unknown"}.`,
+            size: 0,
+          });
         }
-      } catch (e) {
-        console.error(`Error fetching ${file.path}:`, e);
-      }
-    });
+      });
 
-    await Promise.all(fetchPromises);
+      await Promise.all(batchPromises);
+      
+      // Small pause between batches if not the last one
+      if (i + BATCH_SIZE < filesToFetch.length) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
 
     // Build file tree structure
     const fileTree = buildFileTree(sourceFiles.map((f: any) => f.path));

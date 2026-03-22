@@ -158,8 +158,10 @@ const Landing = () => {
     }
   }, []);
 
-  const handleIndex = () => {
-    if (!repoUrl.includes("github.com")) {
+  const handleIndex = (overrideUrl?: string) => {
+    const url = overrideUrl || repoUrl;
+
+    if (!url.includes("github.com")) {
       toast({ title: "Invalid URL", description: "Please enter a valid GitHub repository URL.", variant: "destructive" });
       return;
     }
@@ -173,12 +175,12 @@ const Landing = () => {
     if (githubToken) localStorage.setItem("github_pat", githubToken);
     if (!user) incrementIndexCount();
 
-    navigate(`/index/custom-repo`, { state: { githubUrl: repoUrl, githubToken: githubToken || undefined } });
+    navigate(`/index/custom-repo`, { state: { githubUrl: url, githubToken: githubToken || undefined } });
   };
 
   const handleRepoClick = (url: string) => {
     setRepoUrl(url);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    handleIndex(url);
   };
 
   const content = compact ? (
@@ -196,7 +198,7 @@ const Landing = () => {
             onKeyDown={(e) => e.key === "Enter" && handleIndex()}
             className="h-8 font-mono text-xs bg-card border-border"
           />
-          <Button onClick={handleIndex} size="sm" className="h-8 px-3 text-xs shrink-0">
+          <Button onClick={() => handleIndex()} size="sm" className="h-8 px-3 text-xs shrink-0">
             Go
           </Button>
         </div>
@@ -361,7 +363,7 @@ const Landing = () => {
                     className="w-full bg-transparent border-none outline-none font-mono text-sm placeholder:text-muted-foreground/30 text-foreground"
                   />
                 </div>
-                <Button onClick={handleIndex} className="h-12 px-8 rounded-2xl bg-teal-500 text-black font-black uppercase tracking-widest text-[11px] hover:bg-teal-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_30px_rgba(20,184,166,0.2)] shrink-0">
+                <Button onClick={() => handleIndex()} className="h-12 px-8 rounded-2xl bg-teal-500 text-black font-black uppercase tracking-widest text-[11px] hover:bg-teal-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_30px_rgba(20,184,166,0.2)] shrink-0">
                   Index Repository <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -557,7 +559,7 @@ const Landing = () => {
           </div>
 
           <div className="mt-24 text-center">
-            <Button size="lg" onClick={handleIndex} className="h-14 px-10 rounded-full bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-neutral-200 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+            <Button size="lg" onClick={() => handleIndex()} className="h-14 px-10 rounded-full bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-neutral-200 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)]">
               Explore all features <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -589,7 +591,7 @@ const Landing = () => {
             <h2 className="text-4xl md:text-7xl font-serif italic tracking-tight">Ready to master <br /> your codebase?</h2>
             <p className="text-muted-foreground text-lg italic font-medium max-w-lg mx-auto">Join 10,000+ developers using AI to decode complex software systems.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" onClick={handleIndex} className="h-14 px-10 rounded-full bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-neutral-200 transition-all shadow-2xl">
+              <Button size="lg" onClick={() => handleIndex()} className="h-14 px-10 rounded-full bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-neutral-200 transition-all shadow-2xl">
                 Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button

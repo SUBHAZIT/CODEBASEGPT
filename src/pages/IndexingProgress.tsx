@@ -30,6 +30,7 @@ const IndexingProgress = () => {
   const [error, setError] = useState<string | null>(null);
   const [githubUrl, setGithubUrl] = useState("");
   const [githubToken, setGithubToken] = useState<string | undefined>();
+  const [newToken, setNewToken] = useState("");
   const started = useRef(false);
 
   useEffect(() => {
@@ -128,7 +129,16 @@ const IndexingProgress = () => {
     };
 
     doIndex();
-  }, [githubUrl, githubToken, navigate, setRepoData, setOverview, setIndexing]);
+  }, [githubUrl, githubToken, navigate, setRepoData, setOverview, setIndexing, settings.cacheIndexData]);
+
+  const handleRetry = () => {
+    if (newToken) {
+      localStorage.setItem("github_pat", newToken);
+      setGithubToken(newToken);
+      setError(null);
+      started.current = false; // Reset started ref to allow re-run
+    }
+  };
 
   const displayUrl = githubUrl
     ? githubUrl.replace("https://github.com/", "")
@@ -180,14 +190,38 @@ const IndexingProgress = () => {
         </div>
 
         {error && (
-          <div className="p-3 rounded border border-destructive/30 bg-destructive/5 flex items-start gap-2">
-            <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs text-destructive">{error}</p>
-              <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="mt-1.5 text-[11px] h-6 px-2">
-                ← Back
-              </Button>
+          <div className="p-4 rounded-2xl border border-destructive/20 bg-destructive/5 flex flex-col gap-3">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
+              <p className="text-xs text-destructive leading-relaxed">{error}</p>
             </div>
+            
+            {error.includes("private") && (
+              <div className="space-y-3 pt-2 border-t border-destructive/10">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Provide Access Token</p>
+                <input
+                  type="password"
+                  placeholder="ghp_xxxxxxxxxxxx"
+                  value={newToken}
+                  onChange={(e) => setNewToken(e.target.value)}
+                  className="w-full bg-background/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono outline-none focus:border-primary/40 transition-all"
+                />
+                <div className="flex gap-2">
+                  <Button onClick={handleRetry} className="flex-1 h-8 text-[11px] bg-primary text-primary-foreground hover:bg-primary/90">
+                    Retry Indexing
+                  </Button>
+                  <Button variant="ghost" onClick={() => navigate("/")} className="h-8 text-[11px] px-3">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {!error.includes("private") && (
+              <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="w-fit text-[11px] h-6 px-2">
+                ← Back to Home
+              </Button>
+            )}
           </div>
         )}
 
