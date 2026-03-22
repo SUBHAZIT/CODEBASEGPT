@@ -100,61 +100,73 @@ serve(async (req) => {
     // Filter source files
     const sourceFiles = (treeData.tree || [])
       .filter((item: any) => item.type === "blob" && shouldIncludeFile(item.path))
-    // Step 3: Download file contents (batched to avoid GitHub secondary rate limits)
+    // Step 3: Download file contents (low-concurrency ordered fetch to avoid rate limits)
     const filesToFetch = sourceFiles.slice(0, 200);
-    const fileContents: { path: string; content: string; size: number }[] = [];
-    const BATCH_SIZE = 5;
+    const fileContents: { path: string; content: string; size: number }[] = new Array(filesToFetch.length);
+    const CONCURRENCY = 3;
 
-    for (let i = 0; i < filesToFetch.length; i += BATCH_SIZE) {
-      const batch = filesToFetch.slice(i, i + BATCH_SIZE);
-      
-      const batchPromises = batch.map(async (file: any) => {
-        try {
-          const res = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
-            { headers }
-          );
-          
-          if (res.ok) {
-            const data = await res.json();
-            if (data.encoding === "base64" && data.content) {
-              const decoded = atob(data.content.replace(/\n/g, ""));
-              fileContents.push({
-                path: file.path,
-                content: decoded.slice(0, 3000),
-                size: data.size,
-              });
-            }
-          } else {
-            await res.text();
-            fileContents.push({
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const fetchFile = async (idx: number, retry = false) => {
+      const file = filesToFetch[idx];
+      try {
+        const res = await fetch(
+          `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
+          { headers }
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.encoding === "base64" && data.content) {
+            const decoded = atob(data.content.replace(/\n/g, ""));
+            fileContents[idx] = {
               path: file.path,
-              content: `// Warning: Failed to fetch (HTTP ${res.status}).`,
-              size: 0,
-            });
+              content: decoded.slice(0, 3000),
+              size: data.size,
+            };
           }
-        } catch (e) {
-          fileContents.push({
+        } else if ((res.status === 403 || res.status === 429) && !retry) {
+          // Automatic retry once for rate limit errors
+          console.warn(`Rate limit hit for ${file.path}, retrying in 1s...`);
+          await delay(1000);
+          return fetchFile(idx, true);
+        } else {
+          const errText = await res.text();
+          console.error(`Failed to fetch ${file.path} (HTTP ${res.status}): ${errText}`);
+          fileContents[idx] = {
             path: file.path,
-            content: `// Warning: Fetch Error: ${e instanceof Error ? e.message : "Unknown"}.`,
+            content: `// Warning: Failed to fetch (HTTP ${res.status}).`,
             size: 0,
-          });
+          };
         }
-      });
-
-      await Promise.all(batchPromises);
-      
-      // Small pause between batches if not the last one
-      if (i + BATCH_SIZE < filesToFetch.length) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (e) {
+        console.error(`Network error fetching ${file.path}:`, e);
+        fileContents[idx] = {
+          path: file.path,
+          content: `// Warning: Fetch Error: ${e instanceof Error ? e.message : "Unknown"}.`,
+          size: 0,
+        };
       }
+    };
+
+    // Process in small groups to maintain concurrency limit
+    for (let i = 0; i < filesToFetch.length; i += CONCURRENCY) {
+      const group = [];
+      for (let j = 0; j < CONCURRENCY && (i + j) < filesToFetch.length; j++) {
+        group.push(fetchFile(i + j));
+      }
+      await Promise.all(group);
+      await delay(50); // Tiny pause between groups
     }
+
+    // Filter out any undefineds if some failed catastrophically
+    const validContents = fileContents.filter(f => f !== undefined);
 
     // Build file tree structure
     const fileTree = buildFileTree(sourceFiles.map((f: any) => f.path));
 
     // Build context string for AI
-    const repoContext = fileContents
+    const repoContext = validContents
       .map((f) => `--- ${f.path} ---\n${f.content}`)
       .join("\n\n");
 
@@ -173,7 +185,7 @@ serve(async (req) => {
           complexity: sourceFiles.length > 1000 ? "Enterprise" : sourceFiles.length > 500 ? "High" : sourceFiles.length > 100 ? "Medium" : "Low",
         },
         fileTree,
-        fileContents,
+        fileContents: validContents,
         repoContext,
         totalFiles: sourceFiles.length,
       }),

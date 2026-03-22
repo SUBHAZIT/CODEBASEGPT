@@ -35,10 +35,18 @@ serve(async (req) => {
     if (githubToken) headers.Authorization = `Bearer ${githubToken}`;
 
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeGitHubPath(path)}`;
-    const res = await fetch(url, { headers });
+    
+    // Retry logic for 403/429
+    let res = await fetch(url, { headers });
+    if (!res.ok && (res.status === 403 || res.status === 429)) {
+       console.warn(`Rate limit hit for ${path}, retrying in 1s...`);
+       await new Promise(r => setTimeout(r, 1000));
+       res = await fetch(url, { headers });
+    }
 
     if (!res.ok) {
       const errText = await res.text();
+      console.error(`GitHub API error (${res.status}) for ${path}: ${errText}`);
       return new Response(
         JSON.stringify({ error: `GitHub API error: ${res.status}`, details: errText }),
         {
@@ -50,7 +58,6 @@ serve(async (req) => {
 
     const data = await res.json();
 
-    // If it's a directory, GitHub returns an array.
     if (Array.isArray(data)) {
       return new Response(JSON.stringify({ error: "Path is a directory, not a file" }), {
         status: 200,
@@ -65,21 +72,33 @@ serve(async (req) => {
       });
     }
 
-    const decoded = atob(String(data.content).replace(/\n/g, ""));
-    const truncated = decoded.length > MAX_CHARS;
+    // Use a more memory-safe decode for large files
+    let content = "";
+    try {
+      content = atob(String(data.content).replace(/\s/g, ""));
+    } catch (atobErr) {
+      console.error(`atob failure for ${path}:`, atobErr);
+      return new Response(JSON.stringify({ error: "Failed to decode file content" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const truncated = content.length > MAX_CHARS;
+    const finalContent = truncated ? content.slice(0, MAX_CHARS) : content;
 
     return new Response(
       JSON.stringify({
         path,
-        size: Number(data.size || decoded.length),
+        size: Number(data.size || content.length),
         truncated,
-        content: truncated ? decoded.slice(0, MAX_CHARS) : decoded,
+        content: finalContent,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
-    console.error("repo-file error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    console.error("repo-file crash:", e);
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Internal Server Error" }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
